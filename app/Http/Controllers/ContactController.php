@@ -25,27 +25,11 @@ class ContactController extends Controller
      */
     public function index()
     {
-        $query = Contact::query();
 
-        if (request()->query('trash')) {
-            $query->onlyTrashed();
-        }
-
-        $contacts = $query->latest()->where(function ($q) {
-            $companyId = request()->query('company_id');
-
-            if ($companyId) {
-                $q->where('company_id', $companyId);
-            }
-        })->where(function ($q) {
-            $search = request()->query('search');
-
-            if ($search) {
-                $q->where('first_name', 'LIKE', '%' . $search . '%');
-                $q->orWhere('last_name', 'LIKE', '%' . $search . '%');
-                $q->orWhere('email', 'LIKE', '%' . $search . '%');
-            }
-        })->paginate(10);
+        $contacts = Contact::allowedTrash()->allowedSorts(['first_name', 'last_name', 'email'])
+            ->allowedFilters('company_id')
+            ->allowedSearch('first_name', 'last_name', 'email')
+            ->paginate(10);
 
         $companies = $this->companyRepo->pluck();
 

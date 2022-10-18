@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\AllowedFilterSearch;
+use App\Models\Scopes\AllowedSort;
 use App\Models\Scopes\SimpleSoftDeletes;
 use App\Models\Scopes\SimpleSoftDeletingScope;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Contact extends Model
 {
-    use HasFactory, softDeletes;
+    use HasFactory, SoftDeletes, AllowedFilterSearch, AllowedSort;
 
     protected $fillable = [
         'first_name',
@@ -27,11 +29,8 @@ class Contact extends Model
         return $this->belongsTo(Company::class);
     }
 
-    // protected static function booted()
-    // {
-    //     // static::addGlobalScope(new SimpleSoftDeletingScope);
-    //     static::addGlobalScope('softDeletes', function (Builder $builder) {
-    //         $builder->whereNull('deleted_at');
-    //     });
-    // }
+    public function tasks()
+    {
+        return hasMany(Tasks::class);
+    }
 }
